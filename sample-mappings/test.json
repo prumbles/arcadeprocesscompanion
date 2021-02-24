@@ -1,0 +1,44 @@
+[
+    {
+        "Id": 2,
+        "Mappings": [
+            {
+                "Buttons": [0],
+                "Key": "ESC",
+                "Shift": false,
+                "Ctrl": false,
+                "Alt": false
+            },
+            {
+                "Buttons": [1],
+                "Key": "SPACE",
+                "Shift": false,
+                "Ctrl": false,
+                "Alt": false
+            },
+            {
+                "Buttons": [2, 3],
+                "Key": "ENTER",
+                "Shift": false,
+                "Ctrl": false,
+                "Alt": false
+            },
+            {
+                "Buttons": [],
+                "Axis": [0, -1],
+                "Key": "UP",
+                "Shift": false,
+                "Ctrl": false,
+                "Alt": false
+            },
+            {
+                "Buttons": [4],
+                "Axis": [0, 1],
+                "Key": "DOWN",
+                "Shift": false,
+                "Ctrl": false,
+                "Alt": false
+            }
+        ]
+    }
+]

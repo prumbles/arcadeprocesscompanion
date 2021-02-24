@@ -1,0 +1,12 @@
+github.com/micmonay/keybd_event v1.1.0 h1:fQzkqiG/Siwji1Ju9NDkIb8FSFFlPU76YbJntrXdtQw=
+github.com/micmonay/keybd_event v1.1.0/go.mod h1:QS2Kfz0PbPezFqMPEot+l/cK78/tHLZtZ7AbYUCRKsQ=
+github.com/simulatedsimian/joystick v1.0.1 h1:bZYHP+qaEmx0oc6oFIYQCt+rYL46G6rZRke+bipEEpY=
+github.com/simulatedsimian/joystick v1.0.1/go.mod h1:V+4pJKB2SmVXfp8w7EW5RR9InUXO5M/WhVEHwosjujA=
+github.com/splace/joysticks v0.0.0-20200523190645-fcfd5a84a6c2 h1:HROHt05nJ0PwmCtAcZ9NwD+m5ilmIlc4X8y5Rdbh+B0=
+github.com/splace/joysticks v0.0.0-20200523190645-fcfd5a84a6c2/go.mod h1:PQPCtmjcD4hfFT4yHSY7zomN8fvov8fFvQWYSth8L34=
+github.com/splace/signals v0.0.0-20200924170840-2b9299cb1bca h1:ayOVtbmy/xnuy3v6sfU9p3btOcwWdVIlb+6fj4QQExk=
+github.com/splace/signals v0.0.0-20200924170840-2b9299cb1bca/go.mod h1:rKtwppKVCn8g51/FHhy4IqU1qclvvXgHV8skOYMqcnQ=
+github.com/splace/sounds v0.0.0-20180725230354-43b73b539164 h1:ZIPWLoOAchVpN+QlavhwX7NSWDDaYeqiyFEHgRie1xA=
+github.com/splace/sounds v0.0.0-20180725230354-43b73b539164/go.mod h1:JhBmVvVhQCqdxSKwop9Yr1Po/ZIxFmjWUrv91DAHaOk=
+golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 h1:SgQ6LNaYJU0JIuEHv9+s6EbhSCwYeAf5Yvj6lpYlqAE=
+golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
