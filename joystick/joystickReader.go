@@ -64,6 +64,12 @@ func NewJoystickReader(mappings ControllerMappings, keyBonding *keybd_event.KeyB
 	return reader, nil
 }
 
+func (reader *JoystickReader) CleanUp() {
+	if reader.joystickReference != nil {
+		reader.joystickReference.Close()
+	}
+}
+
 func (reader *JoystickReader) ProcessState() {
 	if reader.joystickReference == nil {
 		return

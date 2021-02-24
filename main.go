@@ -4,6 +4,9 @@ import (
 	. "arcadeprocesscompanion/joystick"
 	"arcadeprocesscompanion/models"
 	. "arcadeprocesscompanion/utils"
+	"fmt"
+	"strings"
+	"sync"
 
 	"encoding/json"
 	"io/ioutil"
@@ -12,6 +15,7 @@ import (
 	"time"
 
 	"github.com/micmonay/keybd_event"
+	"github.com/mitchellh/go-ps"
 )
 
 /**
@@ -35,10 +39,14 @@ arcadeprocesscompanion PROCESS_NAME_LIKE JOY_2_KEY_MAPPINGS
 			}
 		]
 */
+
+var shouldExit bool = false
+var shouldExitMutex sync.Mutex
+
 func main() {
 	args := os.Args[1:]
 
-	// processNameLike := args[0]
+	processNameLike := args[0]
 	joy2KeyMappingsFilePath := args[1]
 
 	content, err := ioutil.ReadFile(joy2KeyMappingsFilePath)
@@ -64,6 +72,11 @@ func main() {
 
 	//apparently you have to do this for the keybd_event package
 	time.Sleep(2 * time.Second)
+
+	// if asterisk * is passed in then don't wait on any process to exit (run forever)
+	if processNameLike != "*" {
+		go checkProcess(processNameLike)
+	}
 
 	for i := range controllerMappings {
 		controllerMapping := &controllerMappings[i]
@@ -92,11 +105,60 @@ func main() {
 	for {
 		time.Sleep(watiTime)
 
+		shouldExitMutex.Lock()
+		exit := shouldExit
+		shouldExitMutex.Unlock()
+
+		if exit {
+			for i := range joystickReaders {
+				joystickReader := &joystickReaders[i]
+
+				joystickReader.CleanUp()
+			}
+			break
+		}
+
 		for i := range joystickReaders {
 			joystickReader := &joystickReaders[i]
 
 			joystickReader.ProcessState()
 		}
+
 	}
 
+	//Sleep for just a short time so any simulated keyboard events from the joypad don't get propagated to the terminal on exit
+	time.Sleep(500 * time.Millisecond)
+}
+
+func checkProcess(processNameLike string) {
+	time.Sleep(5 * time.Second)
+
+	processes, err := ps.Processes()
+
+	isExiting := false
+
+	if err != nil {
+		fmt.Printf("WARNING: Failure to retrieve list of processes.\n")
+	} else {
+		found := false
+		for i := range processes {
+			pname := processes[i].Executable()
+
+			if strings.Contains(pname, processNameLike) {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			isExiting = true
+			shouldExitMutex.Lock()
+			defer shouldExitMutex.Unlock()
+			shouldExit = true
+		}
+	}
+
+	if !isExiting {
+		go checkProcess(processNameLike)
+	}
 }
