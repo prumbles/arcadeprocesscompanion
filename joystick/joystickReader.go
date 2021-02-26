@@ -47,6 +47,8 @@ func NewJoystickReader(mappings ControllerMappings, keyBonding *keybd_event.KeyB
 
 	js, err := joystick.Open(mappings.Id)
 	if err != nil {
+		fmt.Printf("reader: %v\n", reader)
+		fmt.Printf("mappings: %v\n", mappings)
 		panic(err)
 	}
 

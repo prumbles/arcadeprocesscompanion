@@ -3,6 +3,7 @@ package main
 import (
 	. "arcadeprocesscompanion/joystick"
 	"arcadeprocesscompanion/models"
+	"arcadeprocesscompanion/proc"
 	. "arcadeprocesscompanion/utils"
 	"fmt"
 	"strings"
@@ -142,9 +143,20 @@ func checkProcess(processNameLike string) {
 	} else {
 		found := false
 		for i := range processes {
-			pname := processes[i].Executable()
+			//skip this process
+			if processes[i].Pid() == os.Getpid() {
+				continue
+			}
 
-			if strings.Contains(pname, processNameLike) {
+			pname, procError := proc.GetProcCmdLine(processes[i].Pid())
+
+			if procError == nil {
+				if strings.HasPrefix(pname, "go run") {
+					continue
+				}
+			}
+
+			if procError == nil && strings.Contains(pname, processNameLike) {
 				found = true
 				break
 			}
