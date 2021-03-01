@@ -14,3 +14,7 @@ type ControllerMappings struct {
 	Id       int
 	Mappings []ButtonMappings
 }
+
+type Filters struct {
+	Processes []string
+}

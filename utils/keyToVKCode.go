@@ -23,6 +23,12 @@ func GetVKCode(keyStr string) (int, error) {
 	case "TAB":
 		return keybd_event.VK_TAB, nil
 
+	case "DELETE":
+		return keybd_event.VK_DELETE, nil
+
+	case "CAPS":
+		return keybd_event.VK_CAPSLOCK, nil
+
 	case "UP":
 		return keybd_event.VK_UP, nil
 
@@ -70,6 +76,114 @@ func GetVKCode(keyStr string) (int, error) {
 
 	case "F12":
 		return keybd_event.VK_F12, nil
+
+	case "A":
+		return keybd_event.VK_A, nil
+
+	case "B":
+		return keybd_event.VK_B, nil
+
+	case "C":
+		return keybd_event.VK_C, nil
+
+	case "D":
+		return keybd_event.VK_D, nil
+
+	case "E":
+		return keybd_event.VK_E, nil
+
+	case "F":
+		return keybd_event.VK_F, nil
+
+	case "G":
+		return keybd_event.VK_G, nil
+
+	case "H":
+		return keybd_event.VK_H, nil
+
+	case "I":
+		return keybd_event.VK_I, nil
+
+	case "J":
+		return keybd_event.VK_J, nil
+
+	case "K":
+		return keybd_event.VK_K, nil
+
+	case "L":
+		return keybd_event.VK_L, nil
+
+	case "M":
+		return keybd_event.VK_M, nil
+
+	case "N":
+		return keybd_event.VK_N, nil
+
+	case "O":
+		return keybd_event.VK_O, nil
+
+	case "P":
+		return keybd_event.VK_P, nil
+
+	case "Q":
+		return keybd_event.VK_Q, nil
+
+	case "R":
+		return keybd_event.VK_R, nil
+
+	case "S":
+		return keybd_event.VK_S, nil
+
+	case "T":
+		return keybd_event.VK_T, nil
+
+	case "U":
+		return keybd_event.VK_U, nil
+
+	case "V":
+		return keybd_event.VK_V, nil
+
+	case "W":
+		return keybd_event.VK_W, nil
+
+	case "X":
+		return keybd_event.VK_X, nil
+
+	case "Y":
+		return keybd_event.VK_Y, nil
+
+	case "Z":
+		return keybd_event.VK_Z, nil
+
+	case "0":
+		return keybd_event.VK_0, nil
+
+	case "1":
+		return keybd_event.VK_1, nil
+
+	case "2":
+		return keybd_event.VK_2, nil
+
+	case "3":
+		return keybd_event.VK_3, nil
+
+	case "4":
+		return keybd_event.VK_4, nil
+
+	case "5":
+		return keybd_event.VK_5, nil
+
+	case "6":
+		return keybd_event.VK_6, nil
+
+	case "7":
+		return keybd_event.VK_7, nil
+
+	case "8":
+		return keybd_event.VK_8, nil
+
+	case "9":
+		return keybd_event.VK_9, nil
 
 	default:
 		return 0, errors.New("Key " + keyStr + " doesn't map to any key")
