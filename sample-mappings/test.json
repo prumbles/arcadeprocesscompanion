@@ -1,44 +1,63 @@
-[
-    {
-        "Id": 2,
-        "Mappings": [
+{
+    "ProcessPriorityOrder": ["gnome-calc", "gnome-system-monitor", "gnome-screenshot"],
+    "Mappings":
+        [
             {
-                "Buttons": [0],
-                "Key": "ESC",
-                "Shift": false,
-                "Ctrl": false,
-                "Alt": false
+                "Id": 2,
+                "Filters": {
+                    "Processes": ["gnome-calc"]
+                },
+                "Mappings": [
+                    {
+                        "Buttons": [0],
+                        "Key": "A",
+                        "Shift": false,
+                        "Ctrl": false,
+                        "Alt": false
+                    }
+                ]
             },
             {
-                "Buttons": [1],
-                "Key": "SPACE",
-                "Shift": false,
-                "Ctrl": false,
-                "Alt": false
+                "Id": 2,
+                "Filters": {
+                    "Processes": ["gnome-system-monitor"]
+                },
+                "Mappings": [
+                    {
+                        "Buttons": [0],
+                        "Key": "B",
+                        "Shift": false,
+                        "Ctrl": false,
+                        "Alt": false
+                    }
+                ]
             },
             {
-                "Buttons": [2, 3],
-                "Key": "ENTER",
-                "Shift": false,
-                "Ctrl": false,
-                "Alt": false
+                "Id": 2,
+                "Filters": {
+                    "Processes": ["gnome-screenshot"]
+                },
+                "Mappings": [
+                    {
+                        "Buttons": [0],
+                        "Key": "C",
+                        "Shift": false,
+                        "Ctrl": false,
+                        "Alt": false
+                    }
+                ]
             },
             {
-                "Buttons": [],
-                "Axis": [0, -1],
-                "Key": "UP",
-                "Shift": false,
-                "Ctrl": false,
-                "Alt": false
-            },
-            {
-                "Buttons": [4],
-                "Axis": [0, 1],
-                "Key": "DOWN",
-                "Shift": false,
-                "Ctrl": false,
-                "Alt": false
+                "Id": 2,
+                "Mappings": [
+                    {
+                        "Buttons": [0],
+                        "Key": "D",
+                        "Shift": false,
+                        "Ctrl": false,
+                        "Alt": false
+                    }
+                ]
             }
         ]
-    }
-]
+}

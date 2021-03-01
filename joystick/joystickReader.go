@@ -85,7 +85,6 @@ func (reader *JoystickReader) ProcessState() {
 	if state.Buttons > 0 || state.AxisData[0] != 0 || state.AxisData[1] != 0 {
 		for i := range reader.buttonMappings {
 			buttonMapping := &reader.buttonMappings[i]
-
 			if areAllButtonsPushedForFirstTime(buttonMapping.Buttons, state.Buttons, reader.previousButtons,
 				buttonMapping.Axis, state.AxisData, reader.previousAxis) {
 				reader.keyBonding.SetKeys(buttonMapping.VKKeyCode)
@@ -114,7 +113,7 @@ func (reader *JoystickReader) ProcessState() {
 }
 
 func areAllButtonsPushedForFirstTime(buttons []int, state uint32, previousState uint32, axisDefinition []int, axisData []int, previousAxisData []int) bool {
-	buttonsAlreadyPushed := true
+	buttonsHaveNotChanged := true
 	for i := range buttons {
 		btn := buttons[i]
 
@@ -123,8 +122,8 @@ func areAllButtonsPushedForFirstTime(buttons []int, state uint32, previousState 
 			return false
 		}
 
-		if buttonsAlreadyPushed && ((state & mask) != (previousState & mask)) {
-			buttonsAlreadyPushed = false
+		if buttonsHaveNotChanged && ((state & mask) != (previousState & mask)) {
+			buttonsHaveNotChanged = false
 		}
 	}
 
@@ -138,13 +137,13 @@ func areAllButtonsPushedForFirstTime(buttons []int, state uint32, previousState 
 				return false
 			}
 
-			if buttonsAlreadyPushed && (axisData[i] != previousAxisData[i]) {
-				buttonsAlreadyPushed = false
+			if buttonsHaveNotChanged && (axisData[i] != previousAxisData[i]) {
+				buttonsHaveNotChanged = false
 			}
 		}
 	}
 
-	if buttonsAlreadyPushed {
+	if buttonsHaveNotChanged {
 		return false
 	}
 

@@ -1,5 +1,10 @@
 package models
 
+type RootMappings struct {
+	ProcessPriorityOrder []string
+	Mappings             []ControllerMappings
+}
+
 type ButtonMappings struct {
 	Buttons   []int
 	Axis      []int
@@ -13,8 +18,9 @@ type ButtonMappings struct {
 type ControllerMappings struct {
 	Id       int
 	Mappings []ButtonMappings
+	Filters  *MappingFilters
 }
 
-type Filters struct {
+type MappingFilters struct {
 	Processes []string
 }
