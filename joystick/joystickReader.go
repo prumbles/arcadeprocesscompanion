@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"os/exec"
 	"time"
 
 	"github.com/micmonay/keybd_event"
@@ -87,23 +88,44 @@ func (reader *JoystickReader) ProcessState() {
 			buttonMapping := &reader.buttonMappings[i]
 			if areAllButtonsPushedForFirstTime(buttonMapping.Buttons, state.Buttons, reader.previousButtons,
 				buttonMapping.Axis, state.AxisData, reader.previousAxis) {
-				reader.keyBonding.SetKeys(buttonMapping.VKKeyCode)
+				keyPressed := false
+
+				if buttonMapping.Key != nil {
+					reader.keyBonding.SetKeys(buttonMapping.VKKeyCode)
+					keyPressed = true
+				}
 
 				if buttonMapping.Alt {
 					reader.keyBonding.HasALT(true)
+					keyPressed = true
 				}
 
 				if buttonMapping.Ctrl {
 					reader.keyBonding.HasCTRL(true)
+					keyPressed = true
 				}
 
 				if buttonMapping.Shift {
 					reader.keyBonding.HasSHIFT(true)
+					keyPressed = true
 				}
 
-				reader.keyBonding.Press()
-				time.Sleep(10 * time.Millisecond)
-				reader.keyBonding.Release()
+				if keyPressed {
+					reader.keyBonding.Press()
+					time.Sleep(10 * time.Millisecond)
+					reader.keyBonding.Release()
+				}
+
+				if buttonMapping.Command != nil {
+					cmd := exec.Command("bash", "-c", *buttonMapping.Command)
+
+					err := cmd.Run()
+
+					if err != nil {
+						fmt.Printf(err.Error())
+					}
+				}
+
 			}
 		}
 	}

@@ -82,7 +82,11 @@ func (joystickManager *JoystickManager) SetProcessFilter(processNameMatchFilter 
 
 		for j := range controllerMapping.Mappings {
 			mapping := &controllerMapping.Mappings[j]
-			vk, err := utils.GetVKCode(mapping.Key)
+			if mapping.Key == nil {
+				continue
+			}
+
+			vk, err := utils.GetVKCode(*mapping.Key)
 
 			if err != nil {
 				log.Fatal(err)

@@ -8,11 +8,12 @@ type RootMappings struct {
 type ButtonMappings struct {
 	Buttons   []int
 	Axis      []int
-	Key       string
+	Key       *string
 	VKKeyCode int
 	Shift     bool
 	Ctrl      bool
 	Alt       bool
+	Command   *string
 }
 
 type ControllerMappings struct {

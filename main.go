@@ -48,7 +48,7 @@ func main() {
 	joystickManager := joystick.NewJoystickManager(&rootMappings)
 	joystickManager.StartPolling()
 
-	go checkProcesses(rootMappings.ProcessPriorityOrder, "", keepAliveMatcher, quitChan, updateProcessChan)
+	go checkProcesses(rootMappings.ProcessPriorityOrder, "-1", keepAliveMatcher, quitChan, updateProcessChan)
 	for {
 		select {
 		case newProcessMatcher := <-updateProcessChan:

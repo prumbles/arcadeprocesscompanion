@@ -44,6 +44,13 @@
                         "Shift": false,
                         "Ctrl": false,
                         "Alt": false
+                    },
+                    {
+                        "Buttons": [0,1,2],
+                        "Command": "kill -9 `ps aux | grep gnome-screenshot | grep -v grep | awk '{print $2}'`",
+                        "Shift": false,
+                        "Ctrl": false,
+                        "Alt": false
                     }
                 ]
             },
