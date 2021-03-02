@@ -6,9 +6,9 @@ import (
 	"log"
 	"sync"
 	"time"
-
-	"github.com/micmonay/keybd_event"
 )
+
+const FRAME_DURATION time.Duration = 20 * time.Millisecond
 
 type JoystickManager struct {
 	RootConfig *models.RootMappings
@@ -19,7 +19,6 @@ type JoystickManager struct {
 	activeJoystickReaders    []JoystickReader
 	processNameMatchFilter   string
 	exitPoll                 bool
-	kb                       keybd_event.KeyBonding
 }
 
 func NewJoystickManager(rootConfig *models.RootMappings) JoystickManager {
@@ -34,15 +33,8 @@ func NewJoystickManager(rootConfig *models.RootMappings) JoystickManager {
 	manager.processNameMatchFilter = ""
 	manager.exitPoll = false
 
-	kb, err := keybd_event.NewKeyBonding()
-	if err != nil {
-		panic(err)
-	}
-
 	//apparently you have to do this for the keybd_event package
 	time.Sleep(2 * time.Second)
-
-	manager.kb = kb
 
 	return manager
 }
@@ -96,7 +88,7 @@ func (joystickManager *JoystickManager) SetProcessFilter(processNameMatchFilter 
 			mapping.VKKeyCode = vk
 		}
 
-		joystickReader, err := NewJoystickReader(*controllerMapping, &joystickManager.kb)
+		joystickReader, err := NewJoystickReader(*controllerMapping)
 
 		if err != nil {
 			log.Fatal(err)
@@ -129,7 +121,7 @@ func (joystickManager *JoystickManager) StartPolling() {
 
 func (joystickManager *JoystickManager) startPolling() {
 	for {
-		time.Sleep(50 * time.Millisecond)
+		time.Sleep(FRAME_DURATION)
 
 		joystickManager.filterUpdatingMutex.Lock()
 		if joystickManager.exitPoll {

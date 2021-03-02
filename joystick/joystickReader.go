@@ -6,20 +6,24 @@ import (
 	"fmt"
 	"math"
 	"os/exec"
-	"time"
 
 	"github.com/micmonay/keybd_event"
 	"github.com/simulatedsimian/joystick"
 	. "github.com/simulatedsimian/joystick"
+	"gopkg.in/bendahl/uinput.v1"
 )
+
 
 type JoystickReader struct {
 	joystickReference Joystick
 	previousButtons   uint32
 	previousAxis      []int
 	joystickId        int
-	buttonMappings    []ButtonMappings
-	keyBonding        *keybd_event.KeyBonding
+	buttonMappings    []ButtonMappingsInternal
+	mouse             uinput.Mouse
+	mouseSimulation *MouseSimulation
+	mouseSpeed float64
+	mouseAccelerationSeed float64
 }
 
 var bitmask = make([]uint32, 40)
@@ -36,11 +40,48 @@ func initialize() {
 	initAlreadyExecuted = true
 }
 
-func NewJoystickReader(mappings ControllerMappings, keyBonding *keybd_event.KeyBonding) (JoystickReader, error) {
+func NewJoystickReader(mappings ControllerMappings) (JoystickReader, error) {
 	initialize()
 	var reader = JoystickReader{}
 	reader.joystickId = mappings.Id
-	reader.buttonMappings = mappings.Mappings
+
+	if mappings.MouseSimulation != nil {
+		reader.mouseSimulation = mappings.MouseSimulation
+
+		if reader.mouseSimulation.Acceleration < 0 || reader.mouseSimulation.Acceleration > 4 {
+			reader.mouseSimulation.Acceleration = 1.0
+		}
+
+		if reader.mouseSimulation.MaxSpeed < 1 || reader.mouseSimulation.MaxSpeed > 100 {
+			reader.mouseSimulation.MaxSpeed = 60
+		}
+
+		if reader.mouseSimulation.StartSpeed <=0 || reader.mouseSimulation.StartSpeed > 30{
+			reader.mouseSimulation.StartSpeed = 1.0
+		}
+	}
+
+	reader.buttonMappings = make([]ButtonMappingsInternal, len(mappings.Mappings))
+
+	for i := range mappings.Mappings {
+		var mask uint32 = 0
+
+		for _,btn := range mappings.Mappings[i].Buttons {
+			mask = mask | uint32(math.Pow(2, float64(btn)))
+		}
+
+		reader.buttonMappings[i] = ButtonMappingsInternal{
+			ButtonMappings: mappings.Mappings[i],
+			ButtonsMask: mask,
+		}
+
+		kb, err := keybd_event.NewKeyBonding()
+		if err != nil {
+			panic(err)
+		}
+
+		reader.buttonMappings[i].KeyBonding = &kb
+	}
 
 	if mappings.Mappings == nil || len(mappings.Mappings) == 0 {
 		return reader, errors.New("Mappings cannot be empty")
@@ -62,7 +103,14 @@ func NewJoystickReader(mappings ControllerMappings, keyBonding *keybd_event.KeyB
 	reader.previousAxis = make([]int, 2)
 	reader.previousAxis[0] = 0
 	reader.previousAxis[1] = 0
-	reader.keyBonding = keyBonding
+
+	mouse, mouseError := uinput.CreateMouse("/dev/uinput", []byte("arcadeprocesscompanionmouse"))
+
+	if mouseError == nil {
+		reader.mouse = mouse
+	} else {
+		reader.mouse = nil
+	}
 
 	return reader, nil
 }
@@ -70,6 +118,14 @@ func NewJoystickReader(mappings ControllerMappings, keyBonding *keybd_event.KeyB
 func (reader *JoystickReader) CleanUp() {
 	if reader.joystickReference != nil {
 		reader.joystickReference.Close()
+	}
+
+	if reader.mouse != nil {
+		reader.mouse.Close()
+	}
+
+	for _,mapping := range reader.buttonMappings {
+		mapping.KeyBonding.Clear()
 	}
 }
 
@@ -86,34 +142,37 @@ func (reader *JoystickReader) ProcessState() {
 	if state.Buttons > 0 || state.AxisData[0] != 0 || state.AxisData[1] != 0 {
 		for i := range reader.buttonMappings {
 			buttonMapping := &reader.buttonMappings[i]
-			if areAllButtonsPushedForFirstTime(buttonMapping.Buttons, state.Buttons, reader.previousButtons,
-				buttonMapping.Axis, state.AxisData, reader.previousAxis) {
+			prevButtonsPushed := buttonMapping.ButtonsPushed
+
+			buttonsHaveNotChanged, allButtonsPushed := getButtonsPushed(buttonMapping.ButtonsMask, state.Buttons, reader.previousButtons,
+				buttonMapping.Axis, state.AxisData, reader.previousAxis)
+
+			if allButtonsPushed && !buttonsHaveNotChanged {
 				keyPressed := false
 
 				if buttonMapping.Key != nil {
-					reader.keyBonding.SetKeys(buttonMapping.VKKeyCode)
+					buttonMapping.KeyBonding.SetKeys(buttonMapping.VKKeyCode)
 					keyPressed = true
 				}
 
 				if buttonMapping.Alt {
-					reader.keyBonding.HasALT(true)
+					buttonMapping.KeyBonding.HasALT(true)
 					keyPressed = true
 				}
 
 				if buttonMapping.Ctrl {
-					reader.keyBonding.HasCTRL(true)
+					buttonMapping.KeyBonding.HasCTRL(true)
 					keyPressed = true
 				}
 
 				if buttonMapping.Shift {
-					reader.keyBonding.HasSHIFT(true)
+					buttonMapping.KeyBonding.HasSHIFT(true)
 					keyPressed = true
 				}
 
 				if keyPressed {
-					reader.keyBonding.Press()
-					time.Sleep(10 * time.Millisecond)
-					reader.keyBonding.Release()
+					buttonMapping.ButtonsPushed = true
+					buttonMapping.KeyBonding.Press()					
 				}
 
 				if buttonMapping.Command != nil {
@@ -126,6 +185,72 @@ func (reader *JoystickReader) ProcessState() {
 					}
 				}
 
+				if len(buttonMapping.Mouse) == 2 {
+					if buttonMapping.Mouse[0] > 0 {
+						reader.mouse.MoveRight(buttonMapping.Mouse[0])
+
+					} else if buttonMapping.Mouse[0] < 0 {
+						reader.mouse.MoveLeft(buttonMapping.Mouse[0] * -1)
+					}
+
+					if buttonMapping.Mouse[1] > 0 {
+						reader.mouse.MoveDown(buttonMapping.Mouse[1])
+					} else if buttonMapping.Mouse[1] < 0 {
+						reader.mouse.MoveUp(buttonMapping.Mouse[1] * -1)
+					}
+				}
+
+				if buttonMapping.MouseClick > 0 {
+					if buttonMapping.MouseClick == 1 {
+						reader.mouse.LeftClick()
+					} else if buttonMapping.MouseClick == 2 {
+						reader.mouse.RightClick()
+					}
+				}
+
+			} else if prevButtonsPushed && !buttonsHaveNotChanged{
+				buttonMapping.ButtonsPushed = false
+				buttonMapping.KeyBonding.Release()
+			}
+		}
+	} else {
+		for i := range reader.buttonMappings {
+			buttonMapping := &reader.buttonMappings[i]
+			if buttonMapping.ButtonsPushed {
+				buttonMapping.ButtonsPushed = false
+				buttonMapping.KeyBonding.Release()
+			}
+		}
+	}
+
+	if reader.mouseSimulation != nil {
+		if state.AxisData[0] == 0 && state.AxisData[1] == 0 {
+			reader.mouseSpeed = 0
+			reader.mouseAccelerationSeed = 0
+		} else {
+			if reader.mouseSpeed < reader.mouseSimulation.MaxSpeed {
+				reader.mouseSpeed += (math.Pow(reader.mouseSimulation.Acceleration,reader.mouseAccelerationSeed)) * reader.mouseSimulation.StartSpeed
+
+				if reader.mouseSpeed > reader.mouseSimulation.MaxSpeed {
+					reader.mouseSpeed = reader.mouseSimulation.MaxSpeed
+				}
+			}
+
+
+			if state.AxisData[0] > 0 {
+				reader.mouse.MoveRight(int32(reader.mouseSpeed))
+			} else if state.AxisData[0] < 0 {
+				reader.mouse.MoveLeft(int32(reader.mouseSpeed))
+			}
+
+			if state.AxisData[1] < 0 {
+				reader.mouse.MoveUp(int32(reader.mouseSpeed))
+			} else if state.AxisData[1] > 0 {
+				reader.mouse.MoveDown(int32(reader.mouseSpeed))
+			}
+
+			if reader.mouseAccelerationSeed < 1000 && reader.mouseSpeed <= reader.mouseSimulation.MaxSpeed {
+				reader.mouseAccelerationSeed ++
 			}
 		}
 	}
@@ -134,18 +259,13 @@ func (reader *JoystickReader) ProcessState() {
 	copy(reader.previousAxis, state.AxisData)
 }
 
-func areAllButtonsPushedForFirstTime(buttons []int, state uint32, previousState uint32, axisDefinition []int, axisData []int, previousAxisData []int) bool {
-	buttonsHaveNotChanged := true
-	for i := range buttons {
-		btn := buttons[i]
+func getButtonsPushed(buttonsMask uint32, state uint32, previousState uint32, axisDefinition []int, axisData []int, previousAxisData []int) (noChange bool, allButtonsPushed bool) {
+	buttonsHaveNotChanged := (state & buttonsMask) == (previousState & buttonsMask)
+	buttonsAreAllPushed := (state & buttonsMask) == buttonsMask
 
-		mask := bitmask[btn]
-		if (state & mask) != mask {
-			return false
-		}
-
-		if buttonsHaveNotChanged && ((state & mask) != (previousState & mask)) {
-			buttonsHaveNotChanged = false
+	if (buttonsMask != 0) {
+		if !buttonsAreAllPushed {
+			return buttonsHaveNotChanged, false
 		}
 	}
 
@@ -156,7 +276,7 @@ func areAllButtonsPushedForFirstTime(buttons []int, state uint32, previousState 
 			}
 
 			if (axisData[i] * axisDefinition[i]) <= 0 {
-				return false
+				return buttonsHaveNotChanged, false
 			}
 
 			if buttonsHaveNotChanged && (axisData[i] != previousAxisData[i]) {
@@ -165,9 +285,5 @@ func areAllButtonsPushedForFirstTime(buttons []int, state uint32, previousState 
 		}
 	}
 
-	if buttonsHaveNotChanged {
-		return false
-	}
-
-	return true
+	return buttonsHaveNotChanged, buttonsAreAllPushed
 }

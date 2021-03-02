@@ -1,70 +1,31 @@
 {
-    "ProcessPriorityOrder": ["gnome-calc", "gnome-system-monitor", "gnome-screenshot"],
+    "ProcessPriorityOrder": [],
     "Mappings":
         [
             {
-                "Id": 2,
-                "Filters": {
-                    "Processes": ["gnome-calc"]
-                },
+                "Id": 0,
                 "Mappings": [
                     {
-                        "Buttons": [0],
-                        "Key": "A",
-                        "Shift": false,
-                        "Ctrl": false,
-                        "Alt": false
-                    }
-                ]
-            },
-            {
-                "Id": 2,
-                "Filters": {
-                    "Processes": ["gnome-system-monitor"]
-                },
-                "Mappings": [
-                    {
-                        "Buttons": [0],
-                        "Key": "B",
-                        "Shift": false,
-                        "Ctrl": false,
-                        "Alt": false
-                    }
-                ]
-            },
-            {
-                "Id": 2,
-                "Filters": {
-                    "Processes": ["gnome-screenshot"]
-                },
-                "Mappings": [
-                    {
-                        "Buttons": [0],
-                        "Key": "C",
+                        "Buttons": [1],
+                        "Key": "D",
                         "Shift": false,
                         "Ctrl": false,
                         "Alt": false
                     },
                     {
-                        "Buttons": [0,1,2],
-                        "Command": "kill -9 `ps aux | grep gnome-screenshot | grep -v grep | awk '{print $2}'`",
-                        "Shift": false,
-                        "Ctrl": false,
-                        "Alt": false
-                    }
-                ]
-            },
-            {
-                "Id": 2,
-                "Mappings": [
+                        "Buttons": [3],
+                        "MouseClick": 1
+                    },
                     {
-                        "Buttons": [0],
-                        "Key": "D",
-                        "Shift": false,
-                        "Ctrl": false,
-                        "Alt": false
+                        "Buttons": [2],
+                        "MouseClick": 2
                     }
-                ]
+                ],
+                "MouseSimulation": {
+                    "Acceleration": 1,
+                    "MaxSpeed": 60,
+                    "StartSpeed": 1
+                }
             }
         ]
 }
