@@ -63,6 +63,11 @@
                         "Shift": false,
                         "Ctrl": false,
                         "Alt": false
+                    },
+                    {
+                        "Buttons": [],
+                        "Axis": [0, 1],
+                        "Mouse": [0, 30]
                     }
                 ]
             }

@@ -11,6 +11,7 @@ import (
 	"github.com/micmonay/keybd_event"
 	"github.com/simulatedsimian/joystick"
 	. "github.com/simulatedsimian/joystick"
+	"gopkg.in/bendahl/uinput.v1"
 )
 
 type JoystickReader struct {
@@ -20,6 +21,7 @@ type JoystickReader struct {
 	joystickId        int
 	buttonMappings    []ButtonMappings
 	keyBonding        *keybd_event.KeyBonding
+	mouse             *uinput.Mouse
 }
 
 var bitmask = make([]uint32, 40)
@@ -64,12 +66,24 @@ func NewJoystickReader(mappings ControllerMappings, keyBonding *keybd_event.KeyB
 	reader.previousAxis[1] = 0
 	reader.keyBonding = keyBonding
 
+	mouse, mouseError := uinput.CreateMouse("/dev/uinput", []byte("arcadeprocesscompanionmouse"))
+
+	if mouseError == nil {
+		reader.mouse = &mouse
+	} else {
+		reader.mouse = nil
+	}
+
 	return reader, nil
 }
 
 func (reader *JoystickReader) CleanUp() {
 	if reader.joystickReference != nil {
 		reader.joystickReference.Close()
+	}
+
+	if reader.mouse != nil {
+		(*reader.mouse).Close()
 	}
 }
 
@@ -123,6 +137,22 @@ func (reader *JoystickReader) ProcessState() {
 
 					if err != nil {
 						fmt.Printf(err.Error())
+					}
+				}
+
+				if len(buttonMapping.Mouse) == 2 {
+					fmt.Printf("%v\n", buttonMapping.Mouse)
+					if buttonMapping.Mouse[0] > 0 {
+						(*reader.mouse).MoveRight(buttonMapping.Mouse[0])
+
+					} else if buttonMapping.Mouse[0] < 0 {
+						(*reader.mouse).MoveLeft(buttonMapping.Mouse[0] * -1)
+					}
+
+					if buttonMapping.Mouse[1] > 0 {
+						(*reader.mouse).MoveDown(buttonMapping.Mouse[1])
+					} else if buttonMapping.Mouse[1] < 0 {
+						(*reader.mouse).MoveUp(buttonMapping.Mouse[1] * -1)
 					}
 				}
 

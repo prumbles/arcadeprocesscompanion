@@ -13,6 +13,7 @@ type ButtonMappings struct {
 	Shift     bool
 	Ctrl      bool
 	Alt       bool
+	Mouse     []int32
 	Command   *string
 }
 

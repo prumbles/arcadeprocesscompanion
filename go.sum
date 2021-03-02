@@ -12,3 +12,5 @@ github.com/splace/sounds v0.0.0-20180725230354-43b73b539164 h1:ZIPWLoOAchVpN+Qla
 github.com/splace/sounds v0.0.0-20180725230354-43b73b539164/go.mod h1:JhBmVvVhQCqdxSKwop9Yr1Po/ZIxFmjWUrv91DAHaOk=
 golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43 h1:SgQ6LNaYJU0JIuEHv9+s6EbhSCwYeAf5Yvj6lpYlqAE=
 golang.org/x/sys v0.0.0-20210220050731-9a76102bfb43/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+gopkg.in/bendahl/uinput.v1 v1.1.1 h1:lO2THrZ1yy5oTETEAPw9WVQXtzg+1uGLFyWzXJ/UmKY=
+gopkg.in/bendahl/uinput.v1 v1.1.1/go.mod h1:BSXpes5S7ommRWCpCgvjhl6U3r7VlNXer/R1F9HWatQ=
