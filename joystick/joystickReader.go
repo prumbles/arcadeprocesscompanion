@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"strconv"
 	"os/exec"
 
 	"github.com/micmonay/keybd_event"
@@ -20,6 +21,7 @@ type JoystickReader struct {
 	previousAxis      []int
 	joystickId        int
 	buttonMappings    []ButtonMappingsInternal
+	processId int
 	mouse             uinput.Mouse
 	mouseSimulation *MouseSimulation
 	mouseSpeed float64
@@ -40,10 +42,11 @@ func initialize() {
 	initAlreadyExecuted = true
 }
 
-func NewJoystickReader(mappings ControllerMappings) (JoystickReader, error) {
+func NewJoystickReader(mappings ControllerMappings, pId int) (JoystickReader, error) {
 	initialize()
 	var reader = JoystickReader{}
 	reader.joystickId = mappings.Id
+	reader.processId = pId
 
 	if mappings.MouseSimulation != nil {
 		reader.mouseSimulation = mappings.MouseSimulation
@@ -176,7 +179,13 @@ func (reader *JoystickReader) ProcessState() {
 				}
 
 				if buttonMapping.Command != nil {
-					cmd := exec.Command("bash", "-c", *buttonMapping.Command)
+					cmdStr := *buttonMapping.Command
+
+					if reader.processId > 0 {
+						cmdStr = "PROCESS_ID=" + strconv.Itoa(reader.processId) + " && " + cmdStr
+					}
+					fmt.Printf("%v\n", cmdStr)
+					cmd := exec.Command("bash", "-c", cmdStr)
 
 					err := cmd.Run()
 

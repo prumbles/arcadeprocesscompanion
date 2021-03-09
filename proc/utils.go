@@ -15,6 +15,7 @@ type CheckProcessesResult struct {
 	KeepAliveProcessFound  bool
 	PriorityProcessMatcher string
 	PriorityProcessFound   bool
+	PID int
 }
 
 func GetProcCmdLine(pid int) (string, error) {
@@ -36,12 +37,13 @@ func CheckProcesses(processPriorityMatchings []string, keepAliveProcessMatcher s
 	if err != nil {
 		fmt.Printf("WARNING: Failure to retrieve list of processes.\n")
 		return CheckProcessesResult{
-			false, "", false,
+			false, "", false, 0,
 		}
 	} else {
 		foundKeepAlive := !processKeepAlive
 		foundPriorityProcess := false
 		priorityProcessMatcher := ""
+		foundPID := 0
 
 		for priorityMatcherIndex := range processPriorityMatchings {
 			priorityMatcher := processPriorityMatchings[priorityMatcherIndex]
@@ -64,13 +66,14 @@ func CheckProcesses(processPriorityMatchings []string, keepAliveProcessMatcher s
 
 				if foundPriorityProcess && foundKeepAlive {
 					return CheckProcessesResult{
-						foundKeepAlive, priorityProcessMatcher, foundPriorityProcess,
+						foundKeepAlive, priorityProcessMatcher, foundPriorityProcess, foundPID,
 					}
 				}
 
 				if !foundPriorityProcess && strings.Contains(pname, priorityMatcher) {
 					foundPriorityProcess = true
 					priorityProcessMatcher = priorityMatcher
+					foundPID = processes[i].Pid()
 				}
 
 				if !foundKeepAlive && strings.Contains(pname, keepAliveProcessMatcher) {
@@ -80,7 +83,7 @@ func CheckProcesses(processPriorityMatchings []string, keepAliveProcessMatcher s
 		}
 
 		return CheckProcessesResult{
-			foundKeepAlive, priorityProcessMatcher, foundPriorityProcess,
+			foundKeepAlive, priorityProcessMatcher, foundPriorityProcess, foundPID, 
 		}
 	}
 }

@@ -42,7 +42,7 @@ func main() {
 	}
 
 	quitChan := make(chan int)
-	updateProcessChan := make(chan string)
+	updateProcessChan := make(chan proc.CheckProcessesResult)
 	exitApp := false
 
 	joystickManager := joystick.NewJoystickManager(&rootMappings)
@@ -51,9 +51,9 @@ func main() {
 	go checkProcesses(rootMappings.ProcessPriorityOrder, "-1", keepAliveMatcher, quitChan, updateProcessChan)
 	for {
 		select {
-		case newProcessMatcher := <-updateProcessChan:
-			fmt.Printf("New Processs %v\n", newProcessMatcher)
-			joystickManager.SetProcessFilter(newProcessMatcher)
+		case newProcess := <-updateProcessChan:
+			fmt.Printf("New Processs %v\n", newProcess.PriorityProcessMatcher)
+			joystickManager.SetProcessFilter(newProcess.PriorityProcessMatcher, newProcess.PID)
 
 		case <-quitChan:
 			joystickManager.StopPolling()
@@ -71,7 +71,7 @@ func main() {
 }
 
 func checkProcesses(processPriorityMatchers []string, previousProcessMatcher string,
-	keepAliveMatcher string, quitChan chan int, updateProcessChan chan string) {
+	keepAliveMatcher string, quitChan chan int, updateProcessChan chan proc.CheckProcessesResult) {
 	result := proc.CheckProcesses(processPriorityMatchers, keepAliveMatcher)
 
 	if !result.KeepAliveProcessFound {
@@ -86,7 +86,7 @@ func checkProcesses(processPriorityMatchers []string, previousProcessMatcher str
 	}
 
 	if previousProcessMatcher != processMatcher {
-		updateProcessChan <- processMatcher
+		updateProcessChan <- result
 	}
 
 	time.Sleep(5 * time.Second)

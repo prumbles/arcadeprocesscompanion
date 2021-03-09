@@ -39,7 +39,7 @@ func NewJoystickManager(rootConfig *models.RootMappings) JoystickManager {
 	return manager
 }
 
-func (joystickManager *JoystickManager) SetProcessFilter(processNameMatchFilter string) error {
+func (joystickManager *JoystickManager) SetProcessFilter(processNameMatchFilter string, pid int) error {
 	joystickManager.filterUpdatingMutex.Lock()
 	defer joystickManager.filterUpdatingMutex.Unlock()
 
@@ -88,13 +88,19 @@ func (joystickManager *JoystickManager) SetProcessFilter(processNameMatchFilter 
 			mapping.VKKeyCode = vk
 		}
 
-		joystickReader, err := NewJoystickReader(*controllerMapping)
+		joystickReader, err := NewJoystickReader(*controllerMapping, pid)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		newJSReaders[i] = joystickReader
+	}
+
+	for i := range joystickManager.activeJoystickReaders {
+		joystickReader := &joystickManager.activeJoystickReaders[i]
+
+		joystickReader.CleanUp()
 	}
 
 	joystickManager.activeJoystickReaders = newJSReaders
