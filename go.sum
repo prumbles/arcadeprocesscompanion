@@ -1,7 +1,13 @@
+github.com/go-ole/go-ole v1.2.4 h1:nNBDSCOigTSiarFpYE9J/KtEA1IOW4CNeqT9TQDqCxI=
+github.com/go-ole/go-ole v1.2.4/go.mod h1:XCwSNxSkXRo4vlyPy93sltvi/qJq0jqQhjqQNIwKuxM=
+github.com/itchyny/volume-go v0.2.1 h1:NiVdnIp3dyCBnygQoBLV9ecAk7Vk4KHfiZFJGvCCIm0=
+github.com/itchyny/volume-go v0.2.1/go.mod h1:YdvjyTIcPXyGcckaIHTfga+ItdhGZQoWhzOORajlkkE=
 github.com/micmonay/keybd_event v1.1.0 h1:fQzkqiG/Siwji1Ju9NDkIb8FSFFlPU76YbJntrXdtQw=
 github.com/micmonay/keybd_event v1.1.0/go.mod h1:QS2Kfz0PbPezFqMPEot+l/cK78/tHLZtZ7AbYUCRKsQ=
 github.com/mitchellh/go-ps v1.0.0 h1:i6ampVEEF4wQFF+bkYfwYgY+F/uYJDktmvLPf7qIgjc=
 github.com/mitchellh/go-ps v1.0.0/go.mod h1:J4lOc8z8yJs6vUwklHw2XEIiT4z4C40KtWVN3nvg8Pg=
+github.com/moutend/go-wca v0.2.0 h1:AEzY6ltC5zPCldKyMYdyXv3TaLqwxSW1TIradqNqRpU=
+github.com/moutend/go-wca v0.2.0/go.mod h1:L/ka++dPvkHYz0UuQ/PIQ3aTuecoXOIM1RSAesh6RYU=
 github.com/simulatedsimian/joystick v1.0.1 h1:bZYHP+qaEmx0oc6oFIYQCt+rYL46G6rZRke+bipEEpY=
 github.com/simulatedsimian/joystick v1.0.1/go.mod h1:V+4pJKB2SmVXfp8w7EW5RR9InUXO5M/WhVEHwosjujA=
 github.com/splace/joysticks v0.0.0-20200523190645-fcfd5a84a6c2 h1:HROHt05nJ0PwmCtAcZ9NwD+m5ilmIlc4X8y5Rdbh+B0=

@@ -55,10 +55,14 @@ func (joystickManager *JoystickManager) SetProcessFilter(processNameMatchFilter 
 				newMappings = append(newMappings, mappings)
 			}
 		} else {
-			for j := range mappings.Filters.Processes {
-				if mappings.Filters.Processes[j] == processNameMatchFilter {
-					newMappings = append(newMappings, mappings)
-					break
+			if len(mappings.Filters.Processes) > 0 && mappings.Filters.Processes[0] == "*" { //When a filter has an asterisk, then this is always used
+				newMappings = append(newMappings, mappings)
+			} else {
+				for j := range mappings.Filters.Processes {
+					if mappings.Filters.Processes[j] == processNameMatchFilter {
+						newMappings = append(newMappings, mappings)
+						break
+					}
 				}
 			}
 		}

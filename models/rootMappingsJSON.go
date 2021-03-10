@@ -6,22 +6,23 @@ type RootMappings struct {
 }
 
 type ButtonMappings struct {
-	Buttons   []int
-	Axis      []int
-	Key       *string
-	VKKeyCode int
-	Shift     bool
-	Ctrl      bool
-	Alt       bool
-	Mouse     []int32
+	Buttons    []int
+	Axis       []int
+	Key        *string
+	VKKeyCode  int
+	Shift      bool
+	Ctrl       bool
+	Alt        bool
+	Mouse      []int32
 	MouseClick int8
-	Command   *string
+	Command    *string
+	Action     *string
 }
 
 type ControllerMappings struct {
-	Id       int
-	Mappings []ButtonMappings
-	Filters  *MappingFilters
+	Id              int
+	Mappings        []ButtonMappings
+	Filters         *MappingFilters
 	MouseSimulation *MouseSimulation
 }
 
@@ -31,6 +32,6 @@ type MappingFilters struct {
 
 type MouseSimulation struct {
 	Acceleration float64 //Number between 1 and 2
-	MaxSpeed float64
-	StartSpeed float64
+	MaxSpeed     float64
+	StartSpeed   float64
 }

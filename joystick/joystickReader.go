@@ -1,12 +1,13 @@
 package joystick
 
 import (
+	. "arcadeprocesscompanion/actions"
 	. "arcadeprocesscompanion/models"
 	"errors"
 	"fmt"
 	"math"
-	"strconv"
 	"os/exec"
+	"strconv"
 
 	"github.com/micmonay/keybd_event"
 	"github.com/simulatedsimian/joystick"
@@ -14,17 +15,16 @@ import (
 	"gopkg.in/bendahl/uinput.v1"
 )
 
-
 type JoystickReader struct {
-	joystickReference Joystick
-	previousButtons   uint32
-	previousAxis      []int
-	joystickId        int
-	buttonMappings    []ButtonMappingsInternal
-	processId int
-	mouse             uinput.Mouse
-	mouseSimulation *MouseSimulation
-	mouseSpeed float64
+	joystickReference     Joystick
+	previousButtons       uint32
+	previousAxis          []int
+	joystickId            int
+	buttonMappings        []ButtonMappingsInternal
+	processId             int
+	mouse                 uinput.Mouse
+	mouseSimulation       *MouseSimulation
+	mouseSpeed            float64
 	mouseAccelerationSeed float64
 }
 
@@ -59,7 +59,7 @@ func NewJoystickReader(mappings ControllerMappings, pId int) (JoystickReader, er
 			reader.mouseSimulation.MaxSpeed = 60
 		}
 
-		if reader.mouseSimulation.StartSpeed <=0 || reader.mouseSimulation.StartSpeed > 30{
+		if reader.mouseSimulation.StartSpeed <= 0 || reader.mouseSimulation.StartSpeed > 30 {
 			reader.mouseSimulation.StartSpeed = 1.0
 		}
 	}
@@ -69,13 +69,13 @@ func NewJoystickReader(mappings ControllerMappings, pId int) (JoystickReader, er
 	for i := range mappings.Mappings {
 		var mask uint32 = 0
 
-		for _,btn := range mappings.Mappings[i].Buttons {
+		for _, btn := range mappings.Mappings[i].Buttons {
 			mask = mask | uint32(math.Pow(2, float64(btn)))
 		}
 
 		reader.buttonMappings[i] = ButtonMappingsInternal{
 			ButtonMappings: mappings.Mappings[i],
-			ButtonsMask: mask,
+			ButtonsMask:    mask,
 		}
 
 		kb, err := keybd_event.NewKeyBonding()
@@ -127,7 +127,7 @@ func (reader *JoystickReader) CleanUp() {
 		reader.mouse.Close()
 	}
 
-	for _,mapping := range reader.buttonMappings {
+	for _, mapping := range reader.buttonMappings {
 		mapping.KeyBonding.Clear()
 	}
 }
@@ -175,7 +175,7 @@ func (reader *JoystickReader) ProcessState() {
 
 				if keyPressed {
 					buttonMapping.ButtonsPushed = true
-					buttonMapping.KeyBonding.Press()					
+					buttonMapping.KeyBonding.Press()
 				}
 
 				if buttonMapping.Command != nil {
@@ -192,6 +192,10 @@ func (reader *JoystickReader) ProcessState() {
 					if err != nil {
 						fmt.Printf(err.Error())
 					}
+				}
+
+				if buttonMapping.Action != nil {
+					PerformAction(*buttonMapping.Action)
 				}
 
 				if len(buttonMapping.Mouse) == 2 {
@@ -217,7 +221,7 @@ func (reader *JoystickReader) ProcessState() {
 					}
 				}
 
-			} else if prevButtonsPushed && !buttonsHaveNotChanged{
+			} else if prevButtonsPushed && !buttonsHaveNotChanged {
 				buttonMapping.ButtonsPushed = false
 				buttonMapping.KeyBonding.Release()
 			}
@@ -238,13 +242,12 @@ func (reader *JoystickReader) ProcessState() {
 			reader.mouseAccelerationSeed = 0
 		} else {
 			if reader.mouseSpeed < reader.mouseSimulation.MaxSpeed {
-				reader.mouseSpeed += (math.Pow(reader.mouseSimulation.Acceleration,reader.mouseAccelerationSeed)) * reader.mouseSimulation.StartSpeed
+				reader.mouseSpeed += (math.Pow(reader.mouseSimulation.Acceleration, reader.mouseAccelerationSeed)) * reader.mouseSimulation.StartSpeed
 
 				if reader.mouseSpeed > reader.mouseSimulation.MaxSpeed {
 					reader.mouseSpeed = reader.mouseSimulation.MaxSpeed
 				}
 			}
-
 
 			if state.AxisData[0] > 0 {
 				reader.mouse.MoveRight(int32(reader.mouseSpeed))
@@ -259,7 +262,7 @@ func (reader *JoystickReader) ProcessState() {
 			}
 
 			if reader.mouseAccelerationSeed < 1000 && reader.mouseSpeed <= reader.mouseSimulation.MaxSpeed {
-				reader.mouseAccelerationSeed ++
+				reader.mouseAccelerationSeed++
 			}
 		}
 	}
@@ -272,7 +275,7 @@ func getButtonsPushed(buttonsMask uint32, state uint32, previousState uint32, ax
 	buttonsHaveNotChanged := (state & buttonsMask) == (previousState & buttonsMask)
 	buttonsAreAllPushed := (state & buttonsMask) == buttonsMask
 
-	if (buttonsMask != 0) {
+	if buttonsMask != 0 {
 		if !buttonsAreAllPushed {
 			return buttonsHaveNotChanged, false
 		}

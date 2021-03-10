@@ -3,6 +3,7 @@ module arcadeprocesscompanion
 go 1.16
 
 require (
+	github.com/itchyny/volume-go v0.2.1 // indirect
 	github.com/micmonay/keybd_event v1.1.0 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/simulatedsimian/joystick v1.0.1 // indirect

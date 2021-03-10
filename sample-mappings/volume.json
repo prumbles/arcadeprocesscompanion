@@ -1,0 +1,36 @@
+{
+    "ProcessPriorityOrder": ["calc"],
+    "Mappings":
+        [
+            {
+                "Id": 0,
+                "Filters": {
+                    "Processes": ["*"]
+                },
+                "Mappings": [
+                    {
+                        "Buttons": [8],
+                        "Axis": [0, 1],
+                        "Action": "VOLUME_DOWN"
+                    },
+                    {
+                        "Buttons": [8],
+                        "Axis": [0, -1],
+                        "Action": "VOLUME_UP"
+                    }
+                ]
+            },
+            {
+                "Id": 0,
+                "Filters": {
+                    "Processes": ["calc"]
+                },
+                "Mappings": [
+                    {
+                        "Buttons": [7,8],
+                        "Action": "MUTE"
+                    }
+                ]
+            }
+        ]
+}
