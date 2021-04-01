@@ -1,4 +1,5 @@
 # In development - documentation may not be completely accurate yet.
+# Does not work in Windows - all tests have been done in Ubuntu
 # arcadeprocesscompanion
 Used as a companion to launching non-standard games on RetroPie/EmulationStation.  This application does the following:
 
